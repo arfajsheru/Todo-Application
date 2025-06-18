@@ -9,10 +9,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const App = () => {
   return (
     <Provider store={store}>
-      <SafeAreaView style={styles.main}>
+      <SafeAreaView style={styles.main}> 
 
         <AppNavigator />
-        <StatusBar backgroundColor="#ad954d" />
+        <StatusBar backgroundColor="#ad954d" barStyle='dark-content' />
       </SafeAreaView>
     </Provider>
   );

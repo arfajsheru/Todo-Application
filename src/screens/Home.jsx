@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { addTodo, deletTodo, toggleTodo, editTodo } from "../Store/todoSlice";
-import { TrashIcon } from "react-native-heroicons/solid";
+import { TrashIcon, UserCircleIcon } from "react-native-heroicons/solid";
 import {
   PencilSquareIcon,
   CheckCircleIcon,
@@ -19,8 +19,10 @@ import ConfirmationBox from "../components/ConfirmationBox";
 import BottomNvigation from "../navigation/BottomNvigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Navbar from "../components/Global/Navbar";
+import { useNavigation } from "expo-router";
 
 const HomeScreen = () => {
+  const navigation = useNavigation();
   const [task, setTask] = useState("");
   const [editMode, setEditMode] = useState(null); // task id being edited
   const [visible, setVisible] = useState(false);
@@ -119,7 +121,12 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>
-        <Text style={styles.title}>My Todo List</Text>
+        <View style={styles.titleAndProfileWrapper}>
+          <TouchableOpacity onPress={() => navigation.navigate("MyProfile")}>
+            <UserCircleIcon size={50} />
+          </TouchableOpacity>
+          <Text style={styles.title}>My Todo List</Text>
+        </View>
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -166,7 +173,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 40,
     fontWeight: "bold",
-    paddingBottom: 16,
     textAlign: "center",
   },
   main: {
@@ -181,6 +187,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+  },
+  titleAndProfileWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
   },
   inputContainer: {
     flexDirection: "row",

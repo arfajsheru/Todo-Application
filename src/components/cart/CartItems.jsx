@@ -6,10 +6,23 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 const CartItems = () => {
   const [quantities, setQuantities] = useState({});
+  const tranlateY = useSharedValue(200);
+
+
+  useEffect(() => {
+    tranlateY.value = withSpring(0);
+  },[])
+
+ const animatedStyle = useAnimatedStyle(() => {
+  return {
+    transform: [{ translateY: tranlateY.value }],
+  };
+});
 
   const handleIncrement = (id) => {
     setQuantities((prev) => ({
@@ -73,7 +86,7 @@ const CartItems = () => {
   ];
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedStyle]}>
       <View style={styles.header}>
         <Text style={styles.textHeader}>8 Mins</Text>
         <Text style={styles.textHeader}>{data.length} Items</Text>
@@ -125,7 +138,7 @@ const CartItems = () => {
           );
         }}
       />
-    </View>
+    </Animated.View>
   );
 };
 
