@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { addTodo, deletTodo, toggleTodo, editTodo } from "../Store/todoSlice";
@@ -14,8 +15,10 @@ import {
   PencilSquareIcon,
   CheckCircleIcon,
 } from "react-native-heroicons/outline";
-import ScreenWrapper from "../components/Global/ScreenWrapper";
 import ConfirmationBox from "../components/ConfirmationBox";
+import BottomNvigation from "../navigation/BottomNvigation";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Navbar from "../components/Global/Navbar";
 
 const HomeScreen = () => {
   const [task, setTask] = useState("");
@@ -114,43 +117,48 @@ const HomeScreen = () => {
   );
 
   return (
-    <ScreenWrapper>
-      <Text style={styles.title}>My Todo List</Text>
+    <SafeAreaView style={styles.main}>
+      <View style={styles.container}>
+        <Text style={styles.title}>My Todo List</Text>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter a task..."
-          value={task}
-          onChangeText={(text) => setTask(text)}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter a task..."
+            value={task}
+            onChangeText={(text) => setTask(text)}
+          />
+
+          {editMode ? (
+            <TouchableOpacity style={styles.addButton} onPress={handleSaveEdit}>
+              <Text style={styles.addButtonText}>Update</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.addButton} onPress={handleAddTodo}>
+              <Text style={styles.addButtonText}>Add</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <FlatList
+          data={todos}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderTodo}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No tasks yet.</Text>
+          }
+          contentContainerStyle={{ paddingBottom: 60 }}
         />
-
-        {editMode ? (
-          <TouchableOpacity style={styles.addButton} onPress={handleSaveEdit}>
-            <Text style={styles.addButtonText}>Update</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.addButton} onPress={handleAddTodo}>
-            <Text style={styles.addButtonText}>Add</Text>
-          </TouchableOpacity>
-        )}
+        <ConfirmationBox
+          visible={visible}
+          title={`Confirm ${currentAction?.toUpperCase()}`}
+          description={`Are you sure you want to ${currentAction} this task?`}
+          onCancel={() => setVisible(false)}
+          onConfirm={handleConfirm}
+        />
       </View>
 
-      <FlatList
-        data={todos}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderTodo}
-        ListEmptyComponent={<Text style={styles.emptyText}>No tasks yet.</Text>}
-        contentContainerStyle={{ paddingBottom: 60 }}
-      />
-      <ConfirmationBox
-        visible={visible}
-        title={`Confirm ${currentAction?.toUpperCase()}`}
-        description={`Are you sure you want to ${currentAction} this task?`}
-        onCancel={() => setVisible(false)}
-        onConfirm={handleConfirm}
-      />
-    </ScreenWrapper>
+      <BottomNvigation />
+    </SafeAreaView>
   );
 };
 
@@ -160,7 +168,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingBottom: 16,
     textAlign: "center",
-    marginTop: 20,
+  },
+  main: {
+    flex: 1,
+    backgroundColor: "#ffff",
+    ...Platform.select({
+      android: {
+        paddingTop: 0,
+      },
+    }),
+  },
+  container: {
+    flex: 1,
+    padding: 10,
   },
   inputContainer: {
     flexDirection: "row",
